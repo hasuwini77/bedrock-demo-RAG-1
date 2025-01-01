@@ -1,7 +1,14 @@
-// app/components/Chat.tsx
+// src/app/components/Chat.tsx
 "use client";
 
 import { useState } from "react";
+
+interface BedrockResponse {
+  content: Array<{
+    type: string;
+    text: string;
+  }>;
+}
 
 export default function Chat() {
   const [prompt, setPrompt] = useState("");
@@ -21,10 +28,21 @@ export default function Chat() {
         body: JSON.stringify({ prompt }),
       });
 
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+
       const data = await res.json();
-      setResponse(data.completion);
+      console.log("Raw response:", data);
+
+      // Extract the text from the content array
+      const responseText = data.content[0].text;
+      console.log("Extracted text:", responseText);
+
+      setResponse(responseText);
     } catch (error) {
       console.error("Error:", error);
+      setResponse("Error occurred while fetching response");
     } finally {
       setLoading(false);
     }
@@ -49,7 +67,7 @@ export default function Chat() {
         </button>
       </form>
       {response && (
-        <div className="mt-4 p-4 border border-gray-300 text-black rounded">
+        <div className="mt-4 p-4 border border-gray-300 rounded bg-white text-black">
           <pre className="whitespace-pre-wrap">{response}</pre>
         </div>
       )}

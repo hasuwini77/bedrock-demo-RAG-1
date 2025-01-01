@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    console.log("Received prompt:", body.prompt); // Debug log
 
     const client = new BedrockRuntimeClient({
       region: process.env.AWS_REGION || "us-east-1",
@@ -20,6 +21,9 @@ export async function POST(request: NextRequest) {
     const payload = {
       anthropic_version: "bedrock-2023-05-31",
       max_tokens: 1000,
+      temperature: 0.8,
+      system:
+        "You are a zen master who explains coding through peaceful metaphors.",
       messages: [
         {
           role: "user",
@@ -37,6 +41,7 @@ export async function POST(request: NextRequest) {
 
     const response = await client.send(command);
     const responseData = JSON.parse(new TextDecoder().decode(response.body));
+    console.log("Bedrock Response:", responseData); // Debug log
 
     return NextResponse.json(responseData);
   } catch (error) {
