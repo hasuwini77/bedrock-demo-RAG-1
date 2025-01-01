@@ -36,7 +36,7 @@ export default function Chat() {
         <textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded"
+          className="w-full p-2 border border-gray-300 text-black rounded"
           rows={4}
           placeholder="Enter your prompt..."
         />
@@ -49,7 +49,7 @@ export default function Chat() {
         </button>
       </form>
       {response && (
-        <div className="mt-4 p-4 border border-gray-300 rounded">
+        <div className="mt-4 p-4 border border-gray-300 text-black rounded">
           <pre className="whitespace-pre-wrap">{response}</pre>
         </div>
       )}

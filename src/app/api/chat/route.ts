@@ -1,24 +1,16 @@
+// src/app/api/chat/route.ts
 import {
   BedrockRuntimeClient,
   InvokeModelCommand,
 } from "@aws-sdk/client-bedrock-runtime";
 import { NextRequest, NextResponse } from "next/server";
 
-// Define types for the request and response
-interface ChatRequest {
-  prompt: string;
-}
-
-interface ChatResponse {
-  completion: string;
-}
-
 export async function POST(request: NextRequest) {
   try {
-    const body = (await request.json()) as ChatRequest;
+    const body = await request.json();
 
     const client = new BedrockRuntimeClient({
-      region: process.env.AWS_REGION || "eu-central-1",
+      region: process.env.AWS_REGION || "us-east-1",
       credentials: {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
