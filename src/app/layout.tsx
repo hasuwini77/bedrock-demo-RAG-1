@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "RAG - bedrock Demo v2",
+  title: "Bedrock Demo v2",
   description: "Gen AI with Claude v2.1",
 };
 
