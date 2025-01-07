@@ -36,7 +36,12 @@ export async function POST(request: NextRequest) {
 
     // Create streaming command
     const command = new InvokeModelWithResponseStreamCommand({
-      modelId: "anthropic.claude-v2:1",
+      // Claude Haiku fast model
+      // modelId: "anthropic.claude-instant-v1",
+      // Old Claude model here
+      // modelId: "anthropic.claude-v2:1",
+      // New Claude model below
+      modelId: "anthropic.claude-3-sonnet-20240229-v1:0",
       contentType: "application/json",
       accept: "application/json",
       body: JSON.stringify(payload),
