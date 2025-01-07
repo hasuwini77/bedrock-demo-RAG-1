@@ -1,4 +1,3 @@
-// src/app/api/chat/route.ts
 import {
   BedrockRuntimeClient,
   InvokeModelWithResponseStreamCommand,
