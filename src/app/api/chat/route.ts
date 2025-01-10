@@ -2,15 +2,20 @@ import {
   BedrockRuntimeClient,
   InvokeModelWithResponseStreamCommand,
 } from "@aws-sdk/client-bedrock-runtime";
+import {
+  BedrockAgentRuntimeClient,
+  RetrieveAndGenerateStreamCommand,
+  type RetrieveAndGenerateStreamCommandOutput,
+} from "@aws-sdk/client-bedrock-agent-runtime";
 import { NextRequest } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    console.log("\n=== Request ===");
     console.log("Received prompt:", body.prompt);
 
-    // Create Bedrock client
-    const client = new BedrockRuntimeClient({
+    const client = new BedrockAgentRuntimeClient({
       region: process.env.AWS_REGION || "us-east-2",
       credentials: {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
@@ -18,67 +23,66 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Prepare the payload for the model
-    const payload = {
-      anthropic_version: "bedrock-2023-05-31",
-      max_tokens: 1000,
-      temperature: 0.8,
-      system:
-        "You are a zen master who explains coding through peaceful metaphors.",
-      messages: [
-        {
-          role: "user",
-          content: [{ type: "text", text: body.prompt }],
-        },
-      ],
-    };
+    console.log("\n=== Configuration ===");
+    console.log("Using Knowledge Base ID:", process.env.KNOWLEDGE_BASE_ID);
+    console.log("Region:", process.env.AWS_REGION);
 
-    // Create streaming command
-    const command = new InvokeModelWithResponseStreamCommand({
-      // Claude Haiku fast model
-      // modelId: "anthropic.claude-instant-v1",
-      // Old Claude model here
-      // modelId: "anthropic.claude-v2:1",
-      // New Claude model below
-      modelId: "anthropic.claude-3-sonnet-20240229-v1:0",
-      contentType: "application/json",
-      accept: "application/json",
-      body: JSON.stringify(payload),
+    const command = new RetrieveAndGenerateStreamCommand({
+      input: {
+        text: body.prompt,
+      },
+      retrieveAndGenerateConfiguration: {
+        type: "KNOWLEDGE_BASE",
+        knowledgeBaseConfiguration: {
+          knowledgeBaseId: process.env.KNOWLEDGE_BASE_ID || "",
+          modelArn: `arn:aws:bedrock:${process.env.AWS_REGION}::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0`,
+        },
+      },
     });
 
-    // Get the stream response
     const response = await client.send(command);
 
-    // Check if stream exists
-    if (!response.body) {
-      throw new Error("No response stream available");
+    if (!response) {
+      throw new Error("No response received");
     }
 
-    const responseBody = response.body; // Store in a new variable after the check
+    console.log("\n=== Streaming Response ===");
 
-    // Create a new ReadableStream
+    // ... previous imports and initial code remain the same
+
     return new Response(
       new ReadableStream({
         async start(controller) {
           try {
-            // Process each chunk from the stream
-            for await (const chunk of responseBody) {
-              // Use the new variable here
-              // Check if chunk and bytes exist
-              if (chunk.chunk?.bytes) {
-                // Decode and parse the chunk
-                const decoded = new TextDecoder().decode(chunk.chunk.bytes);
-                const parsed = JSON.parse(decoded);
+            let fullResponse = "";
 
-                // Send the text content if it exists
-                if (parsed.delta?.text) {
-                  controller.enqueue(parsed.delta.text);
-                }
+            if (!response.stream) {
+              throw new Error("No stream available in response");
+            }
+
+            for await (const event of response.stream) {
+              console.log("\nEvent received:", event);
+
+              // Check for text in the output structure
+              if ("output" in event && event.output?.text) {
+                const text = event.output.text;
+                console.log("Text chunk:", text);
+                controller.enqueue(text);
+                fullResponse += text;
+              }
+
+              // Log citations if present
+              if ("citation" in event) {
+                console.log("\nCitation received:", event.citation);
               }
             }
+
+            console.log("\n=== Final Response ===");
+            console.log(fullResponse);
             controller.close();
           } catch (error) {
-            console.error("Stream processing error:", error);
+            console.error("\n=== Stream Error ===");
+            console.error(error);
             controller.error(error);
           }
         },
@@ -86,14 +90,52 @@ export async function POST(request: NextRequest) {
       {
         headers: {
           "Content-Type": "text/plain; charset=utf-8",
-          "Transfer-Encoding": "chunked",
         },
       }
     );
   } catch (error) {
-    console.error("Error:", error);
+    console.error("Detailed error:", {
+      message: error instanceof Error ? error.message : "Unknown error",
+      name: error instanceof Error ? error.name : "Unknown",
+      stack: error instanceof Error ? error.stack : undefined,
+      error,
+    });
+
+    if (error instanceof Error) {
+      if (error.name === "ValidationException") {
+        return new Response(
+          JSON.stringify({
+            error: "Invalid request format",
+            details: error.message,
+          }),
+          {
+            status: 400,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+      }
+
+      if (error.name === "AccessDeniedException") {
+        return new Response(
+          JSON.stringify({
+            error:
+              "Access denied. Please check your AWS credentials and permissions.",
+            details: error.message,
+          }),
+          {
+            status: 403,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+      }
+    }
+
     return new Response(
-      JSON.stringify({ error: "Failed to process request" }),
+      JSON.stringify({
+        error: "Failed to process request",
+        details:
+          error instanceof Error ? error.message : "Unknown error occurred",
+      }),
       {
         status: 500,
         headers: { "Content-Type": "application/json" },
