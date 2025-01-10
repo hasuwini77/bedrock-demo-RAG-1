@@ -6,21 +6,124 @@ import {
 import { NextRequest } from "next/server";
 
 // Define configuration types
+interface BlogStructure {
+  includeTitle: boolean;
+  includeSubtitle: boolean;
+  includeIntro: boolean;
+  includeSections: boolean;
+  includeConclusion: boolean;
+  includeCTA: boolean;
+  includeMetaDescription: boolean;
+}
+
 interface KnowledgeBaseConfig {
   temperature: number;
   topP: number;
   maxTokens: number;
   systemPrompt: string;
+  blogStructure: BlogStructure;
+  persona: {
+    name: string;
+    background: string;
+    expertise: string[];
+    tone: string[];
+    quirks: string[];
+  };
+  contentGuidelines: {
+    minWordCount: number;
+    maxWordCount: number;
+    sectionsCount: number;
+    keywordDensity: number;
+  };
+  writingStyle: {
+    tone: "casual" | "professional" | "enthusiastic" | "formal";
+    perspective: "first_person" | "third_person";
+    complexity: "simple" | "moderate" | "advanced";
+  };
 }
 
-// Default configuration
-const DEFAULT_CONFIG: KnowledgeBaseConfig = {
-  temperature: 0.7,
+// Create a function to generate the system prompt
+function createSystemPrompt(config: Omit<KnowledgeBaseConfig, "systemPrompt">) {
+  return `You are Edwin, a lofi music curator and founder of Widen Island. Write a blog post following this structure:
+
+[META]
+{Write an SEO meta description, 60-160 characters}
+[/META]
+
+# {Title}
+{Create an engaging, SEO-friendly title}
+
+## {Subtitle}
+{Write a compelling subtitle}
+
+{Write an engaging introduction}
+
+{Create ${config.contentGuidelines.sectionsCount} sections with clear headlines and detailed content}
+
+## Conclusion
+{Write a meaningful conclusion}
+
+## Take Action
+{End with a call-to-action}
+
+Writing Guidelines:
+- Word count: ${config.contentGuidelines.minWordCount}-${config.contentGuidelines.maxWordCount}
+- Tone: ${config.writingStyle.tone}
+- Style: Personal, sharing experiences as a lofi music curator
+- Include practical tips and examples
+- Use markdown formatting`;
+}
+
+// Update the configBase with shorter word counts
+const configBase = {
+  temperature: 0.9,
   topP: 1,
   maxTokens: 2000,
-  systemPrompt:
-    "You are Edwin from Widen Island, a passionate enthusiast for lofi music and its culture. You write as if speaking directly to your audience in a friendly, approachable, and enthusiastic tone. Your writing is human-like, empathetic, and engaging. You specialize in creating SEO-optimized blog posts with catchy titles, compelling introductions, structured subheadings, and thoughtful conclusions. Always aim to provide value by combining practical tips, personal anecdotes, and expert insights while staying relevant and relatable to your audience of lofi enthusiasts.",
+  blogStructure: {
+    includeTitle: true,
+    includeSubtitle: true,
+    includeIntro: true,
+    includeSections: true,
+    includeConclusion: true,
+    includeCTA: true,
+    includeMetaDescription: true,
+  },
+  persona: {
+    name: "Edwin",
+    background: "Founder of Widen Island, lofi music curator",
+    expertise: ["Lofi music production", "Music blogging", "Artist promotion"],
+    tone: ["Enthusiastic", "Supportive", "Knowledgeable"],
+    quirks: [
+      "References specific lofi tracks",
+      "Uses music-related metaphors",
+      "Shares personal stories",
+    ],
+  },
+  contentGuidelines: {
+    minWordCount: 300, // Reduced from 800
+    maxWordCount: 600, // Reduced from 1500
+    sectionsCount: 3,
+    keywordDensity: 0.02,
+  },
+  writingStyle: {
+    tone: "enthusiastic" as const,
+    perspective: "first_person" as const,
+    complexity: "moderate" as const,
+  },
 };
+
+// Create the final configuration
+const DEFAULT_CONFIG: KnowledgeBaseConfig = {
+  ...configBase,
+  systemPrompt: createSystemPrompt(configBase),
+};
+
+// Simplify the formatBlogPrompt function
+function formatBlogPrompt(userPrompt: string): string {
+  return `Topic: ${userPrompt}
+
+Write as Edwin, the lofi music curator. Share your expertise and personal experiences.`;
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -40,8 +143,10 @@ export async function POST(request: NextRequest) {
     console.log("Using Knowledge Base ID:", process.env.KNOWLEDGE_BASE_ID);
     console.log("Region:", process.env.AWS_REGION);
 
-    // Create the enhanced prompt with system message
-    const enhancedPrompt = `${DEFAULT_CONFIG.systemPrompt}\n\nUser: ${body.prompt}\n\nAssistant:`;
+    // Format the prompt with blog structure
+    const enhancedPrompt = `${
+      DEFAULT_CONFIG.systemPrompt
+    }\n\n${formatBlogPrompt(body.prompt)}`;
 
     const command = new RetrieveAndGenerateStreamCommand({
       input: {
@@ -75,7 +180,6 @@ export async function POST(request: NextRequest) {
             for await (const event of response.stream) {
               console.log("\nEvent received:", event);
 
-              // Check for text in the output structure
               if ("output" in event && event.output?.text) {
                 const text = event.output.text;
                 console.log("Text chunk:", text);
@@ -83,7 +187,6 @@ export async function POST(request: NextRequest) {
                 fullResponse += text;
               }
 
-              // Log citations if present
               if ("citation" in event) {
                 console.log("\nCitation received:", event.citation);
               }
@@ -106,42 +209,7 @@ export async function POST(request: NextRequest) {
       }
     );
   } catch (error) {
-    console.error("Detailed error:", {
-      message: error instanceof Error ? error.message : "Unknown error",
-      name: error instanceof Error ? error.name : "Unknown",
-      stack: error instanceof Error ? error.stack : undefined,
-      error,
-    });
-
-    if (error instanceof Error) {
-      if (error.name === "ValidationException") {
-        return new Response(
-          JSON.stringify({
-            error: "Invalid request format",
-            details: error.message,
-          }),
-          {
-            status: 400,
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-      }
-
-      if (error.name === "AccessDeniedException") {
-        return new Response(
-          JSON.stringify({
-            error:
-              "Access denied. Please check your AWS credentials and permissions.",
-            details: error.message,
-          }),
-          {
-            status: 403,
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-      }
-    }
-
+    console.error("Detailed error:", error);
     return new Response(
       JSON.stringify({
         error: "Failed to process request",
