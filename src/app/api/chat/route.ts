@@ -1,8 +1,4 @@
 import {
-  BedrockRuntimeClient,
-  InvokeModelWithResponseStreamCommand,
-} from "@aws-sdk/client-bedrock-runtime";
-import {
   BedrockAgentRuntimeClient,
   RetrieveAndGenerateStreamCommand,
   type RetrieveAndGenerateStreamCommandOutput,
