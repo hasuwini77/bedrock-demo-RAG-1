@@ -76,7 +76,8 @@ export default function Chat() {
   };
 
   return (
-    <div className="flex flex-col h-screen max-w-2xl mx-auto bg-gray-800">
+    <div className="flex flex-col h-full w-full bg-gray-800 max-w-4xl mx-auto text-xl">
+      {/* Chat Messages container */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message) => (
           <div
@@ -98,6 +99,7 @@ export default function Chat() {
         ))}
       </div>
 
+      {/* Form Section */}
       <div className="border-t border-gray-700 p-4 bg-gray-800">
         <form onSubmit={handleSubmit} className="space-y-4">
           <textarea
