@@ -101,7 +101,7 @@ export default function Chat() {
   };
 
   return (
-    <div className="flex flex-col h-screen max-w-2xl mx-auto bg-gray-800">
+    <div className="flex flex-col h-screen w-screen max-w-[80%] mx-auto bg-gray-800">
       <div className="bg-gray-900 p-4 border-b border-gray-700">
         <h1 className="text-white text-xl font-bold">Knowledge Base Chat</h1>
       </div>

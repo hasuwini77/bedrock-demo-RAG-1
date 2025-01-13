@@ -2,9 +2,9 @@ import Chat from "./components/chat";
 
 export default function Home() {
   return (
-    <main>
-      <h1 className="text-2xl font-bold text-center my-8">
-        Claude Anthropic Basic Calls
+    <main className="h-screen w-screen flex flex-col max-w-[80%] mx-auto bg-gray-800">
+      <h1 className="text-2xl font-bold text-center my-8 text-white">
+        Claude Anthropic RAG Level 1 Calls
       </h1>
       <Chat />
     </main>
