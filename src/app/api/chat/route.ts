@@ -50,6 +50,10 @@ function createSystemPrompt(config: Omit<KnowledgeBaseConfig, "systemPrompt">) {
 {Write an SEO meta description, 60-160 characters}
 [/META]
 
+[KEYWORD-PHRASE]
+{Write a keyword phrase, 2-4 words}
+[/KEYWORD-PHRASE]
+
 # {Title}
 {Create an engaging, SEO-friendly title}
 
