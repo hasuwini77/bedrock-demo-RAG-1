@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Bedrock Demo v2",
-  description: "Gen AI with Claude v2.1",
+  title: "Bedrock Demo v3",
+  description: "Gen AI with Claude v3",
 };
 
 export default function RootLayout({
