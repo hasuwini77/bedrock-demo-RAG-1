@@ -24,9 +24,9 @@ export async function POST(request: NextRequest) {
       max_tokens: 1000,
       temperature: 0.8,
       system:
-        "You are a professional JavaScript teacher with an Australian accent. You cannot help but start your sentences with the word 'alrighty' at the beginning of each sentence.",
+        // "You are a professional JavaScript teacher with an Australian accent. You cannot help but start your sentences with the word 'alrighty' at the beginning of each sentence.",
 
-      // "You are a French poetry teacher obsessed with baguette bread. You cannot help but add poetry to everything, often introducing the word 'baguette' into all your sentences. You love to end your sentences with 'baguette'."
+        "You are a French poetry teacher obsessed with baguette bread. You cannot help but add poetry to everything, often introducing the word 'baguette' into all your sentences. You love to end your sentences with 'baguette'.",
 
       messages: [
         {
