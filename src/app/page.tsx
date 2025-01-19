@@ -26,10 +26,12 @@ export default function Home() {
                 <path d="M12 2v4m0 12v4M2 12h4m12 0h4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83m0-14.14l-2.83 2.83m-8.48 8.48l-2.83 2.83" />
               </svg>
             </div>
+
             {/* Title */}
-            <span className="tracking-wider uppercase">
+            <span className="tracking-wider uppercase text-cyan-400 animate-glowing-text">
               RAG - Augmented Intelligence
             </span>
+
             {/* Rotating Symbol 2 */}
             <div className="w-6 h-6 animate-spin-reverse-slow">
               <svg
@@ -56,7 +58,18 @@ export default function Home() {
 
         {/* Chat Button Positioned Next to SplineHead (Visible on Desktop Only) */}
         <Link href="#chat">
-          <button className="absolute bottom-30 right-1/4 px-6 py-3 bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500 text-white font-bold rounded-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all hidden md:block">
+          <button
+            className="absolute bottom-30 right-1/4 px-6 py-3 bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500 text-white font-bold rounded-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all hidden md:block"
+            style={{
+              boxShadow:
+                "0 0 15px rgba(0, 255, 255, 0.7), 0 0 20px rgba(0, 255, 255, 0.7)",
+              textShadow: "0 0 10px rgba(0, 255, 255, 1)",
+              backgroundImage:
+                "linear-gradient(45deg, rgba(0,255,255,0.4), rgba(0,204,255,0.6), rgba(0,255,255,0.7))",
+              backgroundSize: "200% 200%",
+              animation: "gradientMotion 3s ease infinite",
+            }}
+          >
             Click here to chat
           </button>
         </Link>
