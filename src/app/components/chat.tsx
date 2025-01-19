@@ -49,7 +49,6 @@ export default function Chat() {
         throw new Error(`HTTP error! status: ${res.status}`);
       }
 
-      // Create a new message for the assistant's response
       const assistantMessage: ChatMessage = {
         id: Date.now().toString() + "-assistant",
         type: "assistant",
@@ -62,7 +61,6 @@ export default function Chat() {
 
       while (true) {
         const { done, value } = await reader.read();
-
         if (done) break;
 
         const text = new TextDecoder().decode(value);
@@ -92,14 +90,21 @@ export default function Chat() {
   };
 
   return (
-    <div className="flex flex-col h-screen max-w-4xl mx-auto bg-gray-800">
-      <div className="bg-gray-900 p-4 border-b border-gray-700">
-        <h1 className="text-white text-xl font-bold">Knowledge Base Chat</h1>
+    <div
+      id="chat"
+      className="flex flex-col h-screen max-w-4xl mx-auto bg-gray-900 border border-cyan-400 rounded-xl shadow-lg shadow-cyan-500/50"
+    >
+      {/* Chat Header */}
+      <div className="bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 p-4 border-b border-cyan-400">
+        <h1 className="font-orbitron text-xl text-cyan-300">
+          Knowledge Base Chat
+        </h1>
       </div>
 
+      {/* Chat Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.length === 0 && (
-          <div className="text-gray-400 text-center py-8">
+          <div className="text-cyan-400 text-center py-8">
             Start a conversation by asking a question about your knowledge base.
           </div>
         )}
@@ -114,17 +119,17 @@ export default function Chat() {
             <div
               className={`max-w-[80%] p-4 rounded-lg ${
                 message.type === "user"
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-700 text-white"
-              }`}
+                  ? "bg-cyan-500 text-white"
+                  : "bg-gray-800 text-cyan-200"
+              } shadow-md`}
             >
               <p className="whitespace-pre-wrap">{message.content}</p>
               {message.sources && message.sources.length > 0 && (
-                <div className="mt-2 pt-2 border-t border-gray-600 text-sm text-gray-300">
-                  <p className="font-semibold">Sources:</p>
+                <div className="mt-2 pt-2 border-t border-cyan-400 text-sm">
+                  <p className="font-semibold text-cyan-400">Sources:</p>
                   <ul className="list-disc pl-4">
                     {message.sources.map((source, index) => (
-                      <li key={index}>
+                      <li key={index} className="text-cyan-300">
                         {source.reference}
                         {source.page && ` (Page ${source.page})`}
                       </li>
@@ -138,20 +143,21 @@ export default function Chat() {
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="border-t border-gray-700 p-4 bg-gray-800">
+      {/* Chat Input */}
+      <div className="border-t border-cyan-400 p-4 bg-gray-800">
         <form onSubmit={handleSubmit} className="space-y-4">
           <textarea
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Ask a question about your knowledge base..."
-            className="w-full p-2 border rounded bg-gray-700 text-white resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Choose a cool topic for a blog post"
+            className="w-full p-3 border border-cyan-400 rounded bg-gray-700 text-cyan-200 placeholder-cyan-400 focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
             rows={3}
             disabled={isLoading}
           />
           <button
             type="submit"
             disabled={isLoading || !prompt.trim()}
-            className="w-full px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-400 hover:bg-blue-600 transition-colors focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 focus:ring-offset-gray-800"
+            className="w-full px-4 py-2 bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500 text-white font-bold rounded-lg shadow-md hover:shadow-lg hover:scale-105 transition-all focus:ring-2 focus:ring-cyan-300 focus:ring-offset-2 focus:ring-offset-gray-800"
           >
             {isLoading ? (
               <span className="flex items-center justify-center">

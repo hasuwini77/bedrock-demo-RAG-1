@@ -1,11 +1,13 @@
+import Link from "next/link";
 import Chat from "./components/chat";
 import SplineHead from "./components/splinehead";
 
 export default function Home() {
   return (
     <>
-      <div className="h-screen">
-        <div className="font-orbitron text-3xl text-white bg-gray-900 bg-opacity-80 border border-cyan-400 rounded-xl p-6 shadow-lg shadow-cyan-500/50 relative">
+      {/* Header Section */}
+      <header className="w-full bg-gray-900 bg-opacity-80 border-b border-cyan-400 shadow-lg shadow-cyan-500/50">
+        <div className="relative font-orbitron text-3xl text-white p-6">
           <div className="absolute inset-0 border border-cyan-500 rounded-xl opacity-20 blur"></div>
           <div className="relative z-10 flex items-center justify-center space-x-4">
             {/* Rotating Symbol 1 */}
@@ -45,12 +47,30 @@ export default function Home() {
             </div>
           </div>
         </div>
+      </header>
 
+      {/* Main Hero Section */}
+      <div className="relative flex items-center justify-center">
+        {/* SplineHead */}
         <SplineHead />
+
+        {/* Chat Button Positioned Next to SplineHead (Visible on Desktop Only) */}
+        <Link href="#chat">
+          <button className="absolute bottom-30 right-1/4 px-6 py-3 bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500 text-white font-bold rounded-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all hidden md:block">
+            Click here to chat
+          </button>
+        </Link>
       </div>
 
-      <main className="h-screen w-screen flex flex-col max-w-[80%] mx-auto bg-gray-800">
-        <h1 className="text-2xl font-bold text-center my-8 text-white hidden">
+      {/* Chat Section */}
+      <main
+        id="chat"
+        className="h-screen w-screen flex flex-col max-w-[100%] mx-auto bg-gray-800"
+      >
+        <h1
+          id="chat"
+          className="text-2xl font-bold text-center my-8 text-white "
+        >
           Claude Anthropic Rag Level 3 Calls
         </h1>
         <Chat />
