@@ -7,7 +7,7 @@ export default function Home() {
     <>
       {/* Header Section */}
       <header className="w-full bg-gray-900 bg-opacity-80 border-b border-cyan-400 shadow-lg shadow-cyan-500/50">
-        <div className="relative font-orbitron text-3xl text-white p-6">
+        <div className="relative font-orbitron text-md md:text-3xl text-white p-6">
           <div className="absolute inset-0 border border-cyan-500 rounded-xl opacity-20 blur"></div>
           <div className="relative z-10 flex items-center justify-center space-x-4">
             {/* Rotating Symbol 1 */}
