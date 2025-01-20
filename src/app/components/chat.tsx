@@ -91,7 +91,7 @@ export default function Chat() {
   };
 
   return (
-    <BackgroundGradient className="p-6 sm:p-10 rounded-[22px] h-screen w-full max-w-5xl mx-auto">
+    <BackgroundGradient className="p-6 sm:p-10 rounded-[22px] h-full w-full max-w-5xl mx-auto">
       <div
         id="chat"
         className="flex flex-col min-h-full bg-gray-900 border border-cyan-400 rounded-xl shadow-lg shadow-cyan-500/50"
