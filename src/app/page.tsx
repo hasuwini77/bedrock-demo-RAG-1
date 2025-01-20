@@ -80,12 +80,6 @@ export default function Home() {
         id="chat"
         className="h-screen w-screen flex flex-col max-w-[100%] mx-auto bg-gray-800"
       >
-        <h1
-          id="chat"
-          className="text-2xl font-bold text-center my-8 text-white "
-        >
-          Claude Anthropic Rag Level 3 Calls
-        </h1>
         <Chat />
       </main>
     </>
