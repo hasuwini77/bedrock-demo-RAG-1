@@ -18,14 +18,6 @@ export default function Chat() {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!prompt.trim()) return;
@@ -111,12 +103,14 @@ export default function Chat() {
 
         {/* Chat Messages */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {/* Placeholder for empty chat */}
           {messages.length === 0 && (
-            <div className="text-cyan-400 text-center py-8">
+            <div className="flex items-center justify-center min-h-[calc(80vh-300px)] text-cyan-400 text-center py-8">
               Start a conversation with me, I'll write a blog post for you 😊
             </div>
           )}
 
+          {/* Render messages */}
           {messages.map((message) => (
             <div
               key={message.id}
