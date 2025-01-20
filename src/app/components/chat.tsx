@@ -95,53 +95,56 @@ export default function Chat() {
           RAG Augmented Chatbot
         </h1>
         {/* Chat Header */}
-        <div className="bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 p-4 border-b border-cyan-400">
+        <div className="bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 p-4 border-b border-cyan-400 ">
           <h1 className="font-orbitron text-xl text-center text-cyan-300">
             Anthropic Claude v3
           </h1>
         </div>
 
         {/* Chat Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {/* Placeholder for empty chat */}
-          {messages.length === 0 && (
-            <div className="flex items-center justify-center min-h-[calc(80vh-300px)] text-cyan-400 text-center py-8">
-              Start a conversation with me, I'll write a blog post for you 😊
-            </div>
-          )}
-
-          {/* Render messages */}
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex ${
-                message.type === "user" ? "justify-end" : "justify-start"
-              }`}
-            >
-              <div
-                className={`max-w-[80%] p-4 rounded-lg ${
-                  message.type === "user"
-                    ? "bg-cyan-500 text-white"
-                    : "bg-gray-800 text-cyan-200"
-                } shadow-md`}
-              >
-                <p className="whitespace-pre-wrap">{message.content}</p>
-                {message.sources && message.sources.length > 0 && (
-                  <div className="mt-2 pt-2 border-t border-cyan-400 text-sm">
-                    <p className="font-semibold text-cyan-400">Sources:</p>
-                    <ul className="list-disc pl-4">
-                      {message.sources.map((source, index) => (
-                        <li key={index} className="text-cyan-300">
-                          {source.reference}
-                          {source.page && ` (Page ${source.page})`}
-                        </li>
-                      ))}
-                    </ul>
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 relative">
+          {/* Placeholder div that's always present */}
+          <div className="flex items-center justify-center min-h-[calc(80vh-300px)] text-cyan-400 text-center py-8">
+            {messages.length === 0 ? (
+              "Start a conversation with me, I'll write a blog post for you 😊"
+            ) : (
+              <div className="w-full">
+                {messages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={`flex ${
+                      message.type === "user" ? "justify-end" : "justify-start"
+                    }`}
+                  >
+                    <div
+                      className={`max-w-[80%] p-4 rounded-lg ${
+                        message.type === "user"
+                          ? "bg-cyan-500 text-white"
+                          : "bg-gray-800 text-cyan-200"
+                      } shadow-md`}
+                    >
+                      <p className="whitespace-pre-wrap">{message.content}</p>
+                      {message.sources && message.sources.length > 0 && (
+                        <div className="mt-2 pt-2 border-t border-cyan-400 text-sm">
+                          <p className="font-semibold text-cyan-400">
+                            Sources:
+                          </p>
+                          <ul className="list-disc pl-4">
+                            {message.sources.map((source, index) => (
+                              <li key={index} className="text-cyan-300">
+                                {source.reference}
+                                {source.page && ` (Page ${source.page})`}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                )}
+                ))}
               </div>
-            </div>
-          ))}
+            )}
+          </div>
           <div ref={messagesEndRef} />
         </div>
 

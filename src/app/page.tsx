@@ -8,7 +8,7 @@ import SplineHeadSecond from "./components/splinehead2";
 export default function Home() {
   return (
     <>
-      <div className="h-screen">
+      <div className="min-h-[50%] md:h-screen">
         {/* Header Section */}
         <header className="w-full bg-gray-900 bg-opacity-90 border-b border-cyan-500 shadow-xl shadow-cyan-400/40">
           <div className="relative font-orbitron text-md md:text-3xl text-white p-6">
